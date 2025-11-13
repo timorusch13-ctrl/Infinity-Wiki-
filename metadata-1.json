@@ -1,0 +1,6 @@
+{
+  "name": "Infinite Wiki ASCII 11",
+  "description": "An encyclopedia where every word is a link. Click any word to dive deeper into an endless chain of knowledge, powered by the fast Gemini Flash model.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

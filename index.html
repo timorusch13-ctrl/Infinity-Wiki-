@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unendliches Wiki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi&display=swap" rel="stylesheet">
+    <style>
+      @keyframes blink {
+        from, to { opacity: 1 }
+        50% { opacity: 0; }
+      }
+
+      body {
+        background-color: #ffffff;
+        color: #000000;
+        font-family: 'Kosugi', sans-serif;
+        font-size: 1.1rem; /* Set base font size for the entire app */
+        line-height: 1.6; /* Set base line height for readability */
+        margin: 0;
+        padding: 2rem 2rem 5rem 2rem; /* Increased bottom padding for sticky footer */
+      }
+      #root {
+        max-width: 65ch; /* Optimal line length for readability */
+        margin: auto;
+      }
+      /* Reset headers to have the same font size as the body */
+      h1, h2, h3, h4, h5, h6 {
+        font-size: 1em; /* 1em equals the parent font-size, which is 1.1rem from body */
+        margin: 0;
+        font-weight: normal; /* Ensure no bolding by default */
+      }
+      /* Reset button for link-like behavior */
+      button {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      .interactive-word {
+        color: #000000;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+      }
+      .interactive-word:hover {
+        color: #0000ff;
+        text-decoration: underline;
+      }
+      .footer-text {
+        font-size: 0.9em;
+        color: #888;
+      }
+      .footer-text a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+      }
+      .footer-text a:hover {
+        color: #0000ff;
+        text-decoration: underline;
+      }
+      .ascii-art {
+        font-family: monospace;
+        text-align: left; /* Aligned to the left for better block letter rendering */
+        white-space: pre;
+        color: #888;
+        margin: 2rem 0; /* Increased margin for more breathing room */
+        line-height: 1.1; /* Tighter line height for better art rendering */
+        font-size: 0.8em; /* Slightly smaller font for more detailed art */
+      }
+      .blinking-cursor {
+        animation: blink 1s step-end infinite;
+      }
+      
+      /* Search Bar Styles */
+      .search-container {
+        display: flex;
+        align-items: baseline; /* Align to baseline */
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      .search-form {
+        flex-grow: 1; /* Make form take available space */
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.5rem 0.2rem;
+        font: inherit; /* Inherit font from body */
+        color: inherit; /* Inherit text color */
+        border: none;
+        border-bottom: 1px solid transparent; /* No visible line by default */
+        background-color: transparent;
+        box-sizing: border-box; /* Include padding in width */
+        outline: none; /* Remove default focus outline */
+      }
+      
+      .search-input:disabled {
+        color: #ccc;
+      }
+
+      .search-input::placeholder {
+        color: #000000;
+        opacity: 1; /* Override browser default lighter color */
+      }
+      
+      .random-button {
+        background: none;
+        border: none;
+        padding: 0.5rem 0; /* Align vertically with input */
+        font: inherit;
+        color: #000000;
+        cursor: pointer;
+        white-space: nowrap; /* Prevent "Random" from wrapping */
+      }
+      
+      .random-button:hover:not(:disabled) {
+        color: #0000ff;
+      }
+
+      .random-button:disabled {
+        color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .sticky-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        text-align: center;
+        padding: 1.5rem 0;
+        background-color: #ffffff;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.7.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
