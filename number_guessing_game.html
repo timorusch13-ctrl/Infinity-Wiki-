@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlenratespiel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: #0f3460;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .difficulty-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 16px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 212, 255, 0.05);
+            color: #00d4ff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .difficulty-btn:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.15);
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #00a8cc);
+            border-color: #00d4ff;
+            color: #0f3460;
+        }
+
+        .game-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .game-container {
+            display: none;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(0, 212, 255, 0.05);
+            color: #ecf0f1;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        input[type="number"]::placeholder {
+            color: #666;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-guess {
+            background: linear-gradient(135deg, #00d4ff, #00a8cc);
+            color: #0f3460;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-guess:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-guess:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #7c3aed, #5b21b6);
+            color: #ecf0f1;
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.3);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.high {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        .feedback.low {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            color: #3b82f6;
+        }
+
+        .feedback.correct {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+        }
+
+        .feedback.gameover {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        .hint {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            font-size: 13px;
+            color: #b4a7d6;
+            text-align: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .history {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #00d4ff;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .history-item {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-bottom: 4px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .empty-history {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            padding: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 25px;
+                border-radius: 25px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .header p {
+                font-size: 13px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            input[type="number"] {
+                font-size: 14px;
+                padding: 12px 14px;
+            }
+
+            button {
+                font-size: 13px;
+                padding: 12px 16px;
+            }
+
+            .difficulty-select {
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .difficulty-btn {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+        }
+
+        .welcome-screen {
+            text-align: center;
+        }
+
+        .welcome-screen.hidden {
+            display: none;
+        }
+
+        .btn-start {
+            width: 100%;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #00d4ff, #00a8cc);
+            color: #0f3460;
+            padding: 16px;
+            font-size: 16px;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🎯 Zahlenratespiel</h1>
+                <p>Kannst du meine Zahl erraten?</p>
+                <div class="subtitle" id="difficultyInfo"></div>
+            </div>
+
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="welcome-screen">
+                <p style="color: #a0a0a0; margin-bottom: 20px; line-height: 1.6;">
+                    Wähle einen Schwierigkeitsgrad. Der Computer wählt eine zufällige Zahl und du versuchst sie zu erraten. Du bekommst Hinweise, ob deine Zahl zu hoch oder zu niedrig ist!
+                </p>
+                <div class="difficulty-select">
+                    <button class="difficulty-btn active" onclick="selectDifficulty('easy')">
+                        🟢 Leicht<br><span style="font-size: 11px;">(1-10)</span>
+                    </button>
+                    <button class="difficulty-btn" onclick="selectDifficulty('medium')">
+                        🟡 Mittel<br><span style="font-size: 11px;">(1-50)</span>
+                    </button>
+                    <button class="difficulty-btn" onclick="selectDifficulty('hard')">
+                        🔴 Schwer<br><span style="font-size: 11px;">(1-100)</span>
+                    </button>
+                </div>
+                <button class="btn-start" onclick="startGame()">▶ Spiel starten</button>
+            </div>
+
+            <!-- Game Screen -->
+            <div id="gameScreen" class="game-container">
+                <div class="game-stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Versuche</div>
+                        <div class="stat-value" id="attempts">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Bereich</div>
+                        <div class="stat-value" id="rangeDisplay">1-10</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="guessInput">Deine Vermutung:</label>
+                    <div class="input-group">
+                        <input
+                            type="number"
+                            id="guessInput"
+                            placeholder="Zahl eingeben..."
+                            min="1"
+                            onkeypress="if(event.key==='Enter') makeGuess()"
+                        />
+                        <button class="btn-guess" onclick="makeGuess()">Raten</button>
+                    </div>
+                </div>
+
+                <div id="feedback" class="feedback"></div>
+
+                <div id="hint" class="hint" style="display: none;"></div>
+
+                <div id="history" class="history" style="display: none;">
+                    <div class="history-title">📝 Deine Versuche:</div>
+                    <div id="historyItems"></div>
+                </div>
+
+                <button class="btn-reset" onclick="resetGame()">🔄 Neues Spiel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let secretNumber;
+        let attempts = 0;
+        let gameActive = false;
+        let difficulty = 'easy';
+        let maxNumber = 10;
+        let guessHistory = [];
+
+        const difficulties = {
+            easy: { max: 10, name: 'Leicht' },
+            medium: { max: 50, name: 'Mittel' },
+            hard: { max: 100, name: 'Schwer' }
+        };
+
+        function selectDifficulty(level) {
+            difficulty = level;
+            // Update Button-Styles
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.difficulty-btn').classList.add('active');
+            
+            const info = {
+                easy: '🟢 Leicht: Zahlen von 1-10',
+                medium: '🟡 Mittel: Zahlen von 1-50',
+                hard: '🔴 Schwer: Zahlen von 1-100'
+            };
+            document.getElementById('difficultyInfo').textContent = info[level];
+        }
+
+        function startGame() {
+            maxNumber = difficulties[difficulty].max;
+            secretNumber = Math.floor(Math.random() * maxNumber) + 1;
+            attempts = 0;
+            gameActive = true;
+            guessHistory = [];
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('active');
+            document.getElementById('rangeDisplay').textContent = `1-${maxNumber}`;
+            document.getElementById('guessInput').focus();
+            document.getElementById('history').style.display = 'none';
+            document.getElementById('historyItems').innerHTML = '<div class="empty-history">Noch keine Versuche...</div>';
+
+            clearFeedback();
+        }
+
+        function makeGuess() {
+            if (!gameActive) return;
+
+            const guessInput = document.getElementById('guessInput');
+            const guess = parseInt(guessInput.value);
+
+            if (isNaN(guess) || guess < 1 || guess > maxNumber) {
+                showFeedback(`Bitte gib eine Zahl zwischen 1 und ${maxNumber} ein!`, 'gameover');
+                return;
+            }
+
+            attempts++;
+            guessHistory.push(guess);
+            updateHistory();
+
+            const feedbackEl = document.getElementById('feedback');
+
+            if (guess === secretNumber) {
+                showFeedback(
+                    `🎉 RICHTIG! Die Zahl war ${secretNumber}!\n✅ Du hast es in ${attempts} Versuch${attempts !== 1 ? 'en' : ''} geschafft!`,
+                    'correct'
+                );
+                gameActive = false;
+                document.getElementById('attempts').textContent = attempts;
+                document.getElementById('guessInput').disabled = true;
+                document.querySelector('.btn-guess').disabled = true;
+            } else if (guess < secretNumber) {
+                showFeedback(`📈 Die Zahl ist größer als ${guess}!`, 'low');
+                document.getElementById('attempts').textContent = attempts;
+            } else {
+                showFeedback(`📉 Die Zahl ist kleiner als ${guess}!`, 'high');
+                document.getElementById('attempts').textContent = attempts;
+            }
+
+            guessInput.value = '';
+            guessInput.focus();
+
+            // Hinweis nach 3 Versuchen
+            if (attempts >= 3 && gameActive) {
+                const hint = document.getElementById('hint');
+                const hintText = secretNumber <= maxNumber / 2
+                    ? `💡 Hinweis: Die Zahl ist eher klein (≤ ${maxNumber / 2})`
+                    : `💡 Hinweis: Die Zahl ist eher groß (> ${maxNumber / 2})`;
+                hint.textContent = hintText;
+                hint.style.display = 'block';
+            }
+        }
+
+        function showFeedback(message, type) {
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = message;
+            feedbackEl.className = `feedback show ${type}`;
+        }
+
+        function clearFeedback() {
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.className = 'feedback';
+            feedbackEl.textContent = '';
+        }
+
+        function updateHistory() {
+            const historyEl = document.getElementById('history');
+            const itemsEl = document.getElementById('historyItems');
+
+            if (guessHistory.length > 0) {
+                historyEl.style.display = 'block';
+                itemsEl.innerHTML = guessHistory
+                    .map((num, i) => `<div class="history-item">Versuch ${i + 1}: ${num}</div>`)
+                    .join('');
+            }
+        }
+
+        function resetGame() {
+            gameActive = false;
+            document.getElementById('guessInput').disabled = false;
+            document.querySelector('.btn-guess').disabled = false;
+            document.getElementById('hint').style.display = 'none';
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('attempts').textContent = '0';
+            clearFeedback();
+            selectDifficulty('easy'); // Reset to easy
+        }
+
+        // Enter-Taste
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && gameActive) {
+                makeGuess();
+            }
+        });
+
+        // Startseite anzeigen
+        selectDifficulty('easy');
+    </script>
+</body>
+</html>
